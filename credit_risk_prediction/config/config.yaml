@@ -1,0 +1,31 @@
+artifacts_root: "artifacts"
+
+data_source:
+  raw_data_path: "data/raw/credit_risk_dataset.csv"
+  processed_data_path: "data/processed/processed_data.csv"
+
+mlflow:
+  experiment_name: "credit_risk_prediction"
+
+model:
+  best_model_path: "models/model.pkl"
+  preprocessor_path: "models/preprocessor.pkl"
+
+features:
+  numerical:
+    - "loan_amount"
+    - "interest_rate"
+    - "employment_length"
+    - "annual_income"
+    - "credit_score"
+    - "debt_to_income_ratio"
+    - "loan_term"
+  categorical:
+    - "loan_purpose"
+    - "home_ownership"
+  target: "loan_status"
+
+training:
+  test_size: 0.2
+  random_state: 42
+  cv_folds: 5
