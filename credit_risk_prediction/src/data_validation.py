@@ -1,46 +1,38 @@
 import pandas as pd
 import yaml
 
+from src.logger import logger
+from src.paths import ROOT_DIR
+
+
 class DataValidation:
-    def __init__(self, config_path="config/config.yaml"):
-        with open(config_path, "r") as f:
-            self.config = yaml.safe_load(f)
-            
-    def validate(self, df):
-        print("Starting data validation...")
-        
-        # 1. Missing Values
+    def __init__(self, config_path: str = "config/config.yaml"):
+        config_file = ROOT_DIR / config_path
+        with open(config_file, "r", encoding="utf-8") as handle:
+            self.config = yaml.safe_load(handle)
+
+    def validate(self, df: pd.DataFrame) -> bool:
+        logger.info("Starting data validation...")
+
         missing = df.isnull().sum()
         if missing.sum() > 0:
-            print("Warning: Missing values found.")
-            print(missing[missing > 0])
+            logger.warning("Missing values found: %s", missing[missing > 0].to_dict())
         else:
-            print("Check passed: No missing values.")
-            
-        # 2. Duplicate rows
+            logger.info("No missing values.")
+
         duplicates = df.duplicated().sum()
         if duplicates > 0:
-            print(f"Warning: {duplicates} duplicate rows found.")
+            logger.warning("%s duplicate rows found.", duplicates)
         else:
-            print("Check passed: No duplicate rows.")
-            
-        # 3. Invalid Feature Types
-        expected_numerical = self.config["features"]["numerical"]
-        expected_categorical = self.config["features"]["categorical"]
-        
-        for col in expected_numerical:
-            if not pd.api.types.is_numeric_dtype(df[col]):
-                print(f"Warning: {col} is expected to be numerical, but is {df[col].dtype}.")
-        
-        for col in expected_categorical:
-            if not pd.api.types.is_object_dtype(df[col]) and not pd.api.types.is_string_dtype(df[col]):
-                print(f"Warning: {col} is expected to be categorical, but is {df[col].dtype}.")
-        
-        print("Data validation completed.")
-        return True
+            logger.info("No duplicate rows.")
 
-if __name__ == "__main__":
-    from data_ingestion import DataIngestion
-    df = DataIngestion().load_data()
-    validator = DataValidation()
-    validator.validate(df)
+        for col in self.config["features"]["numerical"]:
+            if not pd.api.types.is_numeric_dtype(df[col]):
+                logger.warning("%s expected numerical, got %s.", col, df[col].dtype)
+
+        for col in self.config["features"]["categorical"]:
+            if not pd.api.types.is_object_dtype(df[col]) and not pd.api.types.is_string_dtype(df[col]):
+                logger.warning("%s expected categorical, got %s.", col, df[col].dtype)
+
+        logger.info("Data validation completed.")
+        return True
