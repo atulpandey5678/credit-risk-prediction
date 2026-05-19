@@ -94,8 +94,8 @@ def main() -> None:
         except FileNotFoundError:
             model_ready = False
         except Exception as exc:
-            st.error(f"Failed to load model: {exc}")
-            return
+            model_ready = False
+            st.session_state["model_error"] = str(exc)
 
     with st.sidebar:
         st.header("System status")
@@ -106,10 +106,14 @@ def main() -> None:
                 st.error("Remote API unreachable")
                 st.caption(f"API_URL: {API_URL}")
         elif model_ready:
-            st.success("Model loaded (local)")
+            st.success("Model loaded")
         else:
-            st.error("Model artifacts missing")
-            st.caption("Run `python pipeline/training_pipeline.py` and push `models/*.pkl` to the repo.")
+            st.error("Model not available")
+            err = st.session_state.get("model_error")
+            if err:
+                st.caption(err)
+            else:
+                st.caption("Ensure `credit_risk_prediction/models/*.pkl` are in the repo.")
 
         st.divider()
         st.markdown("**Risk bands**")
