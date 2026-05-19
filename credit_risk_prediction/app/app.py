@@ -25,6 +25,36 @@ LOAN_PURPOSES = [
     "other",
 ]
 
+METRIC_CSS = """
+<style>
+    div[data-testid="stMetric"] label,
+    div[data-testid="stMetric"] label p {
+        color: #6b7280 !important;
+    }
+    div[data-testid="stMetric"] [data-testid="stMetricValue"],
+    div[data-testid="stMetric"] [data-testid="stMetricValue"] div {
+        color: #374151 !important;
+    }
+    div[data-testid="stMetric"] [data-testid="stMetricDelta"] {
+        color: #9ca3af !important;
+    }
+    @media (prefers-color-scheme: dark) {
+        div[data-testid="stMetric"] label,
+        div[data-testid="stMetric"] label p {
+            color: #9ca3af !important;
+        }
+        div[data-testid="stMetric"] [data-testid="stMetricValue"],
+        div[data-testid="stMetric"] [data-testid="stMetricValue"] div {
+            color: #e5e7eb !important;
+        }
+    }
+</style>
+"""
+
+
+def apply_metric_styles() -> None:
+    st.markdown(METRIC_CSS, unsafe_allow_html=True)
+
 
 @st.cache_resource(show_spinner="Loading model...")
 def load_pipeline() -> PredictionPipeline:
@@ -76,6 +106,7 @@ def main() -> None:
         layout="wide",
         initial_sidebar_state="expanded",
     )
+    apply_metric_styles()
 
     st.title("Credit Risk Prediction System")
     st.caption("Evaluate loan default risk from borrower financial and loan details.")
