@@ -1,25 +1,4 @@
-# Credit Risk Prediction System
 
-End-to-end machine learning system that predicts loan default probability from borrower financial and loan details. It includes a training pipeline, saved model artifacts, an optional REST API, and a Streamlit web app for interactive risk scoring.
-
----
-
-## Project Summary
-
-Lenders need fast, consistent ways to assess whether a borrower is likely to default. This project automates that workflow: raw credit data is validated and transformed, multiple classifiers are trained and compared, and the best model is saved for production inference.
-
-**What it does**
-
-- Ingests and validates a credit risk dataset (~10k borrower records)
-- Engineers features (income-to-loan ratio, credit utilization, employment flags, and more)
-- Trains and tunes **Logistic Regression**, **Random Forest**, and **XGBoost** with cross-validation
-- Selects the best model by **ROC-AUC** and persists artifacts (`model.pkl`, `preprocessor.pkl`)
-- Serves predictions via a **Streamlit UI** (bundled model) or an optional **FastAPI** backend
-- Classifies risk as **Low**, **Medium**, or **High** from default probability thresholds
-
-**Target variable:** `loan_status` (0 = no default, 1 = default)
-
----
 
 ## Tech Stack
 
@@ -157,13 +136,17 @@ docker compose up --build
 
 ### 5. Deploy on Streamlit Cloud
 
+In [share.streamlit.io](https://share.streamlit.io) → **App settings**:
+
 | Setting | Value |
 |---------|--------|
-| Main file | `streamlit_app.py` |
-| Python | 3.12 (`.python-version`) |
-| Requirements | `requirements.txt` (repo root) |
+| **Main file path** | `streamlit_app.py` |
+| **Requirements file** | `requirements.txt` |
+| **Python version** | `3.12` |
 
-Ensure `credit_risk_prediction/models/*.pkl` are committed to the repository.
+Also commit: `.python-version`, `packages.txt`, `setup.sh`, and `credit_risk_prediction/models/*.pkl`.
+
+If you see `ModuleNotFoundError: joblib`, the requirements file was not installed — usually wrong Python version (use 3.12, not 3.14) or wrong requirements path.
 
 ---
 
